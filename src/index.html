@@ -41,8 +41,7 @@
                 <div class="panel-heading clearfix">
                     <div class="panel-title">
                         <button class="btn btn-info btn-lg pull-right" data-toggle="modal" data-target="#enrollCert">NEW CERTIFICATE</button>
-                        <button class="btn btn-info btn-lg pull-right" data-toggle="modal" data-target="#verifyCert">VERIFY CERTIFICATE</button>
-                        <button class="btn btn-info btn-lg pull-right" data-toggle="modal" data-target="#saveCert">SAVE CERTIFICATE</button>
+                        <button class="btn btn-info btn-lg pull-left" data-toggle="modal" data-target="#verifyCert">VERIFY CERTIFICATE</button>
                     </div>
                 </div>
                 <ul id="events" class="collapse list-group"></ul>
@@ -68,6 +67,7 @@
                     <strong>Signature</strong>: <span class="cert_signature"> </span><br />
                 </div>
                 <div class="panel-footer">
+                    <button type="button" class="btn btn-buy" onclick="App.downloadCert()">DOWNLOAD</button>
                     <button type="button" class="btn btn-primary btn-danger btn-buy" onclick="App.revokeCert(); return false;">REVOKE</button>
                 </div>
             </div>
@@ -119,27 +119,6 @@
                 </div>
             </div>
 
-        </div>
-    </div>
-
-
-    <div id="articleTemplate" style="display: none;">
-        <div class="row-lg-12">
-            <div class="panel panel-default panel-article">
-                <div class="panel-heading">
-                    <h3 class="panel-title"></h3>
-                </div>
-                <div class="panel-body">
-                    <strong>Subject ID</strong>: <span class="cert_subject_id"> </span><br />
-                    <strong>Subject name</strong>: <span class="cert_subject_name"> </span><br />
-                    <strong>Valid to</strong>: <span class="cert_valid_to"> </span><br />
-                    <strong>Public key</strong>: <span class="cert_public_key"> </span><br />
-                    <strong>Signature</strong>: <span class="cert_signature"> </span><br />
-                </div>
-                <div class="panel-footer">
-                    <button type="button" class="btn btn-primary btn-danger btn-buy" onclick="App.revokeCert(); return false;">REVOKE</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -184,6 +163,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="App.enrollCert(); return false;">SUBMIT</button>
+                    <button type="button" class="btn" onclick="App.genKeys()">GENERATE KEYS</button>
                     <button type="button" class="btn" data-dismiss="modal">CLOSE</button>
                 </div>
             </div>
@@ -235,27 +215,6 @@
                 </div>
             </div>
 
-        </div>
-    </div>
-
-
-    <div id="articleTemplate" style="display: none;">
-        <div class="row-lg-12">
-            <div class="panel panel-default panel-article">
-                <div class="panel-heading">
-                    <h3 class="panel-title"></h3>
-                </div>
-                <div class="panel-body">
-                    <strong>Subject ID</strong>: <span class="cert_subject_id"> </span><br />
-                    <strong>Subject name</strong>: <span class="cert_subject_name"> </span><br />
-                    <strong>Valid to</strong>: <span class="cert_valid_to"> </span><br />
-                    <strong>Public key</strong>: <span class="cert_public_key"> </span><br />
-                    <strong>Signature</strong>: <span class="cert_signature"> </span><br />
-                </div>
-                <div class="panel-footer">
-                    <button type="button" class="btn btn-primary btn-danger btn-buy" onclick="App.revokeCert(); return false;">REVOKE</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -307,6 +266,7 @@
     <script src="js/web3.min.js"></script>
     <script src="js/truffle-contract.js"></script>
     <script src="js/md5.min.js"></script>
+    <script src="js/forge.min.js"></script>
     <script src="js/app.js"></script>
 </body>
 

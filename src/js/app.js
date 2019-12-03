@@ -126,7 +126,22 @@ Helper = {
         for (let c of certs) {
             await Helper.enroll(instance, c);
         }
+    },
+
+    download: function(filename, text) {
+        let pom = document.createElement('a');
+        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        pom.setAttribute('download', filename);
+
+        if (document.createEvent) {
+            let event = document.createEvent('MouseEvents');
+            event.initEvent('click', true, true);
+            pom.dispatchEvent(event);
+        } else {
+            pom.click();
+        }
     }
+
 };
 
 App = {
@@ -248,10 +263,27 @@ App = {
         await Helper.enroll(await App.contracts.CA.deployed(), c);
     },
 
+    genKeys: function() {
+        forge.pki.rsa.generateKeyPair({bits: 2048, e: 0x10001}, (err, keypair) => {
+            let public  = forge.pki.getPublicKeyFingerprint(keypair.publicKey, {encoding: 'hex', delimiter: ':'});
+            let private = forge.pki.privateKeyToPem(keypair.privateKey);
+            $('#cert_public_key').val(public);
+            Helper.download("bcpki-private-key.txt", private);
+        });
+    },
+
     revokeCert: async function() {
         event.preventDefault();
         let hash = $(event.target).data('id');
         await Helper.revoke(await App.contracts.CA.deployed(), hash);
+    },
+
+    downloadCert: async function() {
+        event.preventDefault();
+        let hash = $(event.target).data('id');
+        let instance = await App.contracts.CA.deployed();
+        let c = await Helper.buildCert(instance, hash);
+        Helper.download("bcpki-certificate.json", JSON.stringify(c, null, 4));
     },
 
     verifyCert: async function() {
@@ -264,38 +296,15 @@ App = {
             signature: $('#cert_signaturev').val()
         };
         //print(c)
-        let hash = Helper.hash(c)
-        print(hash)
-        let instance = await App.contracts.CA.deployed()
+        let hash = Helper.hash(c);
+        print(hash);
+        let instance = await App.contracts.CA.deployed();
         //print(instance)
         let ans = await instance.verify(hash, {
             from: App.account
         });
 
-        console.log(ans)
-    },
-
-    saveCert: async function() {
-        let hash = $('#cert_hash').val()
-        print(hash)
-        let instance = await App.contracts.CA.deployed()
-        //print(instance)
-        // let ans = await instance.get_full_cert(hash, {
-        //     from: App.account
-        // });
-        // print(here)
-        // let res   = {};
-        // for (let h of Object.keys(ans)) {
-        //     res[h] = certs[h];
-        // }
-        let ans = await Helper.buildCert(instance, hash);
-        print(ans)
-        const fs = require('fs-extra');
-
-        var data = JSON.stringify(ans);
-
-        fs.writeFile("file.json", data);
-
+        console.log(ans);
     }
 };
 
