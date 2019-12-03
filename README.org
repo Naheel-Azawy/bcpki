@@ -1,0 +1,9 @@
+* BCPKI
+  BlockChain Public Key Infrastructure
+
+** Don't forget to
+   - ganache-cli -d
+   - Use Metamask and import account private key
+   - truffle migrate --compile-all --reset --network ganache
+   - npm install
+   - npm run dev
