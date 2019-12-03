@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>BCPKI</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Application -->
+    <link href="css/app.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="jumbotron text-center">
+            <h1>BCPKI</h1>
+        </div>
+
+        <div class="col-md-12" id="article-list">
+            <div class="row">
+                <div class="col-lg-12">
+                    <p id="account" class="welcome pull-right"></p>
+                    <p id="accountBalance" class="welcome pull-left"></p>
+                </div>
+            </div>
+
+            <div class="row panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="panel-title">
+                        <button class="btn btn-info btn-lg pull-right" data-toggle="modal" data-target="#enrollCert">NEW CERTIFICATE</button>
+                        <button class="btn btn-info btn-lg pull-right" data-toggle="modal" data-target="#verifyCert">VERIFY CERTIFICATE</button>
+                        <button class="btn btn-info btn-lg pull-right" data-toggle="modal" data-target="#saveCert">SAVE CERTIFICATE</button>
+                    </div>
+                </div>
+                <ul id="events" class="collapse list-group"></ul>
+            </div>
+
+            <div id="articlesRow" class="row">
+                <!-- ARTICLES LOAD HERE -->
+            </div>
+        </div>
+    </div>
+
+    <div id="articleTemplate" style="display: none;">
+        <div class="row-lg-12">
+            <div class="panel panel-default panel-article">
+                <div class="panel-heading">
+                    <h3 class="panel-title"></h3>
+                </div>
+                <div class="panel-body">
+                    <strong>Subject ID</strong>: <span class="cert_subject_id"> </span><br />
+                    <strong>Subject name</strong>: <span class="cert_subject_name"> </span><br />
+                    <strong>Valid to</strong>: <span class="cert_valid_to"> </span><br />
+                    <strong>Public key</strong>: <span class="cert_public_key"> </span><br />
+                    <strong>Signature</strong>: <span class="cert_signature"> </span><br />
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary btn-danger btn-buy" onclick="App.revokeCert(); return false;">REVOKE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal form to sell an article -->
+    <div class="modal fade" id="verifyCert" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">VERIFY CERTIFICATE</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form>
+                                <div class="form-group">
+                                    <label for="cert_subject_id">Subject ID</label>
+                                    <input type="text" class="form-control" id="cert_subject_idv" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_subject_name">Subject name</label>
+                                    <input type="text" class="form-control" id="cert_subject_namev" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_valid_to">Valid to</label>
+                                    <input type="text" class="form-control" id="cert_valid_tov" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_public_key">Public key</label>
+                                    <input type="text" class="form-control" id="cert_public_keyv" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_signature">Signature</label>
+                                    <input type="text" class="form-control" id="cert_signaturev" placeholder="">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="App.verifyCert()">VERIFY</button>
+                    <button type="button" class="btn" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div id="articleTemplate" style="display: none;">
+        <div class="row-lg-12">
+            <div class="panel panel-default panel-article">
+                <div class="panel-heading">
+                    <h3 class="panel-title"></h3>
+                </div>
+                <div class="panel-body">
+                    <strong>Subject ID</strong>: <span class="cert_subject_id"> </span><br />
+                    <strong>Subject name</strong>: <span class="cert_subject_name"> </span><br />
+                    <strong>Valid to</strong>: <span class="cert_valid_to"> </span><br />
+                    <strong>Public key</strong>: <span class="cert_public_key"> </span><br />
+                    <strong>Signature</strong>: <span class="cert_signature"> </span><br />
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary btn-danger btn-buy" onclick="App.revokeCert(); return false;">REVOKE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal form to sell an article -->
+    <div class="modal fade" id="enrollCert" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">NEW CERTIFICATE</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form>
+                                <div class="form-group">
+                                    <label for="cert_subject_id">Subject ID</label>
+                                    <input type="text" class="form-control" id="cert_subject_id" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_subject_name">Subject name</label>
+                                    <input type="text" class="form-control" id="cert_subject_name" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_valid_to">Valid to</label>
+                                    <input type="text" class="form-control" id="cert_valid_to" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_public_key">Public key</label>
+                                    <input type="text" class="form-control" id="cert_public_key" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_signature">Signature</label>
+                                    <input type="text" class="form-control" id="cert_signature" placeholder="">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="App.enrollCert(); return false;">SUBMIT</button>
+                    <button type="button" class="btn" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="verifyCert" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">VERIFY CERTIFICATE</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form>
+                                <div class="form-group">
+                                    <label for="cert_subject_id">Subject ID</label>
+                                    <input type="text" class="form-control" id="cert_subject_idv" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_subject_name">Subject name</label>
+                                    <input type="text" class="form-control" id="cert_subject_namev" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_valid_to">Valid to</label>
+                                    <input type="text" class="form-control" id="cert_valid_tov" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_public_key">Public key</label>
+                                    <input type="text" class="form-control" id="cert_public_keyv" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_signature">Signature</label>
+                                    <input type="text" class="form-control" id="cert_signaturev" placeholder="">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="App.verifyCert()">VERIFY</button>
+                    <button type="button" class="btn" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <div id="articleTemplate" style="display: none;">
+        <div class="row-lg-12">
+            <div class="panel panel-default panel-article">
+                <div class="panel-heading">
+                    <h3 class="panel-title"></h3>
+                </div>
+                <div class="panel-body">
+                    <strong>Subject ID</strong>: <span class="cert_subject_id"> </span><br />
+                    <strong>Subject name</strong>: <span class="cert_subject_name"> </span><br />
+                    <strong>Valid to</strong>: <span class="cert_valid_to"> </span><br />
+                    <strong>Public key</strong>: <span class="cert_public_key"> </span><br />
+                    <strong>Signature</strong>: <span class="cert_signature"> </span><br />
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary btn-danger btn-buy" onclick="App.revokeCert(); return false;">REVOKE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal form to sell an article -->
+    <div class="modal fade" id="saveCert" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">SAVE CERTIFICATE</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form>
+                                <div class="form-group">
+                                    <label for="cert_hash">Certificat Hash</label>
+                                    <input type="text" class="form-control" id="cert_hash" placeholder="">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="App.saveCert(); return false;">SAVE</button>
+                    <button type="button" class="btn" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="footer" class="container">
+        <nav class="navbar navbar-default navbar-fixed-bottom">
+            <div class="navbar-inner navbar-content-center text-center">
+                <p class="text-muted" credit><a href="#">BCPKI</a> - &copy; 2019 - <a href="http://naheel-azawy.github.io">Naheel Azawy</a> and <a href="#">Ahmed Zaza</a></p>
+            </div>
+        </nav>
+    </div>
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/md5.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
