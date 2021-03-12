@@ -1,9 +1,13 @@
 * BCPKI
   BlockChain Public Key Infrastructure
 
-** Don't forget to
-   - ganache-cli -d
-   - Use Metamask and import account private key
-   - truffle migrate --compile-all --reset --network ganache
-   - npm install
-   - npm run dev
+** Test run
+   Steps here are for demo purposes. Use tools of your choice if used for production.
+   - Run the test blockchain
+     ~ganache-cli --host 0.0.0.0 --port 8545 --deterministic | ts~
+   - Compile and migrate
+     ~truffle migrate --compile-all --reset~
+   - Install node dependencies
+     ~npm install~
+   - Start the http server
+     ~npm start~

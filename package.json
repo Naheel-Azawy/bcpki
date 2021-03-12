@@ -1,21 +1,21 @@
 {
   "name": "bcpki",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "description": "",
-  "main": "truffle-config.js",
-  "directories": {
-    "test": "test"
+  "main": "",
+  "dependencies": {
+    "@truffle/contract": "^4.3.9",
+    "bootstrap": "^3.3.7",
+    "http-server": "^0.12.3",
+    "jquery": "^3.6.0",
+    "node-forge": "^0.10.0",
+    "web3": "^1.3.4"
   },
+  "devDependencies": {},
   "scripts": {
-    "dev": "lite-server",
+    "start": "node_modules/http-server/bin/http-server",    
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Naheel",
-  "license": "",
-  "devDependencies": {
-    "lite-server": "^2.3.0"
-  },
-  "dependencies": {
-    "fs-extra": "^8.1.0"
-  }
+  "author": "Naheel-Azawy",
+  "license": "GPL-3.0"
 }

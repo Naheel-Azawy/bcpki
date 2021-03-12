@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>BCPKI</title>
+
+    <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>BCPKI</h1>
+        </div>
+
+        <div class="col-md-12" id="article-list">
+            <div class="row">
+                <div class="col-lg-12">
+                    <p id="account" class="pull-right"></p>
+                    <p id="accountBalance" class="pull-left"></p>
+                </div>
+            </div>
+
+            <div class="row panel panel-default">
+                <div class="panel-heading clearfix">
+                    <div class="panel-title">
+                        <button class="btn btn-info btn-lg pull-right" data-toggle="modal" data-target="#enrollCert">NEW CERTIFICATE</button>
+                        <button class="btn btn-info btn-lg pull-left" data-toggle="modal" data-target="#verifyCert">VERIFY CERTIFICATE</button>
+                    </div>
+                </div>
+                <ul id="events" class="collapse list-group"></ul>
+            </div>
+
+            <div id="certsRow" class="row"></div>
+        </div>
+
+        <p style="text-align:center" class="text-muted" credit>
+            BCPKI - 2021 - <a href="http://naheel-azawy.github.io">Naheel Azawy</a>
+        </p>
+    </div>
+
+    <!-- Template of a certificate item -->
+    <div id="certTemplate" style="display: none;">
+        <div class="row-lg-12">
+            <div class="panel panel-default panel-article">
+                <div class="panel-heading">
+                    <h3 class="panel-title"></h3>
+                </div>
+                <div class="panel-body">
+                    <strong>Subject ID</strong>: <span class="cert_subject_id"></span><br>
+                    <strong>Subject name</strong>: <span class="cert_subject_name"></span><br>
+                    <strong>Valid to</strong>: <span class="cert_valid_to"></span><br>
+                    <strong>Public key</strong>: <br><pre class="cert_public_key"></pre><br>
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-buy" onclick="App.downloadCert()">DOWNLOAD</button>
+                    <button type="button" class="btn btn-primary btn-danger btn-buy" onclick="App.revokeCert(); return false;">REVOKE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal form to verify a certificate -->
+    <div class="modal fade" id="verifyCert" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">VERIFY CERTIFICATE</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form>
+                                <div class="form-group">
+                                    <label for="cert_subject_id">Subject ID</label>
+                                    <input type="text" class="form-control" id="cert_subject_idv" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_valid_to">Valid to</label>
+                                    <input type="text" class="form-control" id="cert_valid_tov" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_public_key">Public key</label>
+                                    <textarea class="form-control" id="cert_public_keyv" placeholder=""></textarea>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="App.verifyCert()">VERIFY</button>
+                    <button type="button" class="btn" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal form to enroll a certificate -->
+    <div class="modal fade" id="enrollCert" role="dialog">
+        <div class="modal-dialog">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">NEW CERTIFICATE</h4>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form>
+                                <div class="form-group">
+                                    <label for="cert_subject_id">Subject ID</label>
+                                    <input type="text" class="form-control" id="cert_subject_id" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_subject_name">Subject name</label>
+                                    <input type="text" class="form-control" id="cert_subject_name" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_valid_to">Valid to</label>
+                                    <input type="text" class="form-control" id="cert_valid_to" placeholder="">
+                                </div>
+                                <div class="form-group">
+                                    <label for="cert_public_key">Public key</label>
+                                    <textarea class="form-control" id="cert_public_key" placeholder=""></textarea>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-success" data-dismiss="modal" onclick="App.enrollCert(); return false;">SUBMIT</button>
+                    <button type="button" class="btn" onclick="App.genKeys()">GENERATE KEYS</button>
+                    <button type="button" class="btn" data-dismiss="modal">CLOSE</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- TODO: get rid of bootstrap, jquery, and truffle contract -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="node_modules/web3/dist/web3.min.js"></script>
+    <script src="node_modules/@truffle/contract/dist/truffle-contract.min.js"></script>
+    <script src="node_modules/node-forge/dist/forge.min.js"></script>
+    <script src="address.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
