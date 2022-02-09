@@ -13,6 +13,7 @@ contract CA is Ownable {
         string  public_key;
         address issuer_id;
         string  subject_id;
+        string  subject_name;
         bool    exist;
         address wallet_owner;
     }
@@ -37,7 +38,8 @@ contract CA is Ownable {
     function enroll(string memory cert_hash,
                     string memory valid_to,
                     string memory public_key,
-                    string memory subject_id)
+                    string memory subject_id,
+                    string memory subject_name)
         public onlyOwner returns(bool) {
         if (certs[cert_hash].exist) {
             return false;
@@ -47,6 +49,7 @@ contract CA is Ownable {
                                  public_key,
                                  owner,
                                  subject_id,
+                                 subject_name,
                                  true,
                                  msg.sender);
             certs[cert_hash] = c;

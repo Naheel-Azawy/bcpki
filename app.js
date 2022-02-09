@@ -14,31 +14,31 @@ let App = {
     },
 
     initWeb3: async function() {
-        let forceHttp = false;
+        let forceHttp = true;
         if (window.ethereum && !forceHttp) {
-            window.web3 = new Web3(window.ethereum);
+            window.ethereum = new Web3(window.ethereum);
             await window.ethereum.enable();
             console.log("Using window.ethereum");
-        } else if (window.web3 && !forceHttp) {
-            console.log("Using window.web3");
-            window.web3 = new Web3(window.web3.currentProvider);
+        } else if (window.ethereum && !forceHttp) {
+            console.log("Using window.ethereum");
+            window.ethereum = new Web3(window.ethereum.currentProvider);
         } else {
             let provider = new Web3.providers.HttpProvider(App.web3Url);
-            window.web3 = new Web3(provider);
+            window.ethereum = new Web3(provider);
             console.log(`Using ${App.web3Url}`);
         }
     },
 
     displayAccountInfo: function() {
-        window.web3.eth.getCoinbase((err, account) => {
+        window.ethereum.eth.getCoinbase((err, account) => {
             if(err === null) {
                 App.account = account;
-                window.web3.eth.defaultAccount = account;
+                window.ethereum.eth.defaultAccount = account;
                 $('#account').text(account);
-                window.web3.eth.getBalance(account, function(err, balance) {
+                window.ethereum.eth.getBalance(account, function(err, balance) {
                     if (err === null) {
                         $('#accountBalance').text(
-                            web3.utils.fromWei(balance, "ether") + " ETH");
+                            window.ethereum.utils.fromWei(balance, "ether") + " ETH");
                     }
                 });
             }
@@ -57,11 +57,11 @@ let App = {
                 App.json = json;
                 // create an instance of the contract
                 App.contract =
-                    new window.web3.eth.Contract(json.abi, App.contract_address);
+                    new window.ethereum.eth.Contract(json.abi, App.contract_address);
 
                 App.tcontract = TruffleContract(json);
-                App.tcontract.setProvider(web3.currentProvider);
-                
+                App.tcontract.setProvider(window.ethereum.currentProvider);
+
                 App.reloadCerts();
             })
             .catch(e => {
@@ -114,10 +114,10 @@ let App = {
                 public_key: cert[2],
                 issuer_id: cert[3],
                 subject_id: cert[4],
-                exist: cert[5],
-                wallet_owner: cert[6],
+                subject_name: cert[5],
+                exist: cert[6],
+                wallet_owner: cert[7],
                 algor_ident: "sha256WithRSAEncryption", // TODO: implement
-                subject_name: cert[4] // TODO: implement
             });
         }
         return res;
@@ -140,7 +140,7 @@ let App = {
         }
 
         $('#certsRow').empty();
-        for(let h of Object.keys(App.certs)) {
+        for(let h of Object.keys(App.certs).reverse()) {
             App.displayCert(App.certs[h]);
         }
         App.loading = false;
@@ -176,16 +176,18 @@ let App = {
             .enroll(hash,
                     cert.valid_to,
                     cert.public_key,
-                    cert.subject_id)
+                    cert.subject_id,
+                    cert.subject_name)
             .send({from: App.account});
         */
-        
+
         let instance = await App.tcontract.deployed();
         let res = await instance
             .enroll(hash,
                     cert.valid_to,
                     cert.public_key,
                     cert.subject_id,
+                    cert.subject_name,
                     {from: App.account});
 
         console.log(hash);
@@ -215,7 +217,7 @@ let App = {
         let res = await App.contract.methods
             .revoke(hash).send({from: App.account});
         */
-        
+
         let instance = await App.tcontract.deployed();
         let res = await instance
             .revoke(hash, {from: App.account});
@@ -265,18 +267,21 @@ let App = {
             {
                 algor_ident: "sha256WithRSAEncryption",
                 subject_id: "naheel",
+                subject_name: "Naheel Faisal Kamal",
                 valid_to: "2030-12-12",
                 public_key: (await App.genKeyPair()).public
             },
             {
                 algor_ident: "sha256WithRSAEncryption",
-                subject_id: "alice",
+                subject_id: "iot-ac",
+                subject_name: "IoT Air Conditioning",
                 valid_to: "2030-12-12",
                 public_key: (await App.genKeyPair()).public
             },
             {
                 algor_ident: "sha256WithRSAEncryption",
-                subject_id: "bob",
+                subject_id: "iot-temp",
+                subject_name: "IoT Temperature Sensors",
                 valid_to: "2030-12-12",
                 public_key: (await App.genKeyPair()).public
             }
@@ -290,9 +295,98 @@ let App = {
                         cert.valid_to,
                         cert.public_key,
                         cert.subject_id,
+                        cert.subject_name,
                         {from: App.account});
         }
         App.reloadCerts();
+    },
+
+    testEval: async function() {
+        function rand() {
+            return (Math.random() * 0xFFFFFF << 0).toString(16)
+                .padStart(6, '0');
+        }
+
+        let instance = await App.tcontract.deployed();
+        let certs = [];
+
+        let get_times = [];
+        let enroll_times = [];
+        let revoke_times = [];
+
+        let enroll_gas = 0;
+        let revoke_gas = 0;
+
+        console.log("=init");
+        for (let i = 0; i < 50; ++i) {
+            certs.push({
+                algor_ident: "sha256WithRSAEncryption",
+                subject_id: rand(),
+                subject_name: rand(),
+                valid_to: "2030-12-12",
+                public_key: (await App.genKeyPair()).public
+            });
+        }
+
+        let t, res;
+
+        console.log("=enroll and get_certs");
+        for (let i in certs) {
+            let cert = certs[i];
+
+            t = new Date();
+            res = await instance
+                .enroll(App.genHash(cert),
+                        cert.valid_to,
+                        cert.public_key,
+                        cert.subject_id,
+                        cert.subject_name,
+                        {from: App.account});
+            t = new Date() - t;
+            enroll_gas = res.receipt.gasUsed;
+            enroll_times.push(t);
+
+            t = new Date();
+            res = await instance.get_certs();
+            t = new Date() - t;
+            get_times.push(t);
+            
+            console.log(i);
+        }
+
+        console.log("=revoke");
+        for (let i in certs) {
+            let cert = certs[i];
+
+            t = new Date();
+            res = await instance
+                .revoke(App.genHash(cert),
+                        {from: App.account});
+            t = new Date() - t;
+            revoke_gas = res.receipt.gasUsed;
+            revoke_times.push(t);
+
+            console.log(i);
+        }
+
+        let get_one_times = [];
+        console.log("=one");
+        for (let i = 0; i < 50; ++i) {
+            t = new Date();
+            res = await instance.verify(
+                "11d431eb7b633839ffb61979bd6e7d43ece34ea3090bf0368774eb0723cfc76e");
+            t = new Date() - t;
+            get_one_times.push(t);
+        }
+        console.log(get_one_times.join(","));
+
+        console.log(get_times.join(","));
+        console.log(enroll_times.join(","));
+        console.log(revoke_times.join(","));
+
+        console.log(`enroll_gas = ${enroll_gas}`);
+        console.log(`revoke_gas = ${revoke_gas}`);
+
     }
 
 };

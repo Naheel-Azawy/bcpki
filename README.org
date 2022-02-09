@@ -3,6 +3,8 @@
 
 ** Test run
    Steps here are for demo purposes. Use tools of your choice if used for production.
+   - Install tools if needed
+     E.g. ~yay -S ganache-cli truffle~
    - Run the test blockchain
      ~ganache-cli --host 0.0.0.0 --port 8545 --deterministic | ts~
    - Compile and migrate
@@ -11,3 +13,5 @@
      ~npm install~
    - Start the http server
      ~npm start~
+   - For sample enrolls, inspect in the browser and run in the console
+     ~App.testEnrolls()~
